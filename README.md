@@ -83,8 +83,16 @@ data/
 
 #### Training And Evaluation
 
-To train and evaluation the model from scratch:
+To train model from scratch:
+
+```
+python train_reid.py
+```
+
+To test model:
 
 ```
 python test_reid.py
 ```
+
+
