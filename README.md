@@ -56,6 +56,9 @@ Please see `requirements.txt` for a complete list of dependencies.
 ## Usage
 
 #### Data Preparation
+The file shared via Baidu Netdisk is: data.rar
+Link: https://pan.baidu.com/s/12RCz2Af2M2-9UsstXvQHTg
+Extraction code: 1234
 
 `Unzip the compressed file named 'data.rar'.`
 
