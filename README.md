@@ -12,6 +12,7 @@ ReID-AOD-MGC/
 |   └── encoder.py   # MGC blocks
 |   └── aod_mgc.py   # AOD_MGC model
 ├── test_reid.py                # Test
+├── train_reid.py               # Train
 └── readme.md              # This file
 ```
 
