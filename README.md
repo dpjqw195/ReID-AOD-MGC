@@ -71,10 +71,10 @@ data/
 │       ├── 1.npy
 │       └── 2.npy
 ├── test/
-│   ├── class1/
+│   ├── class31/
 │   │   ├── 1.npy
 │   │   └── 2.npy
-│   └── class2/
+│   └── class32/
 │       ├── 1.npy
 │       └── 2.npy
 ```
