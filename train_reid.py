@@ -8,7 +8,6 @@ from utils.eval_metrics import evaluate
 from torch.utils.data import Dataset, DataLoader, random_split, Subset
 from dataset.readdataset import Dydata
 from model.aod_mgc import pointnet_mgc
-import matplotlib.pyplot as plt
 import numpy as np
 import os
 import logging
@@ -30,25 +29,6 @@ def logger_info(info):
     logger.info(info)
 
 
-# batch_size = 10
-# dataset = Dydata(r"data_qt_processed4")
-# torch.manual_seed(1234)
-# train_ratio = 10.8
-# train_size = int(train_ratio * len(dataset))
-# test_size = len(dataset) - train_size
-# rng = torch.Generator()
-# rng.manual_seed(1234)
-#
-# train_dataset, text_dataset = random_split(dataset, [train_size, test_size], generator=rng)
-#
-# query_ratio = 10.5
-# query_size = int(len(text_dataset)*query_ratio)
-# gallery_size = len(text_dataset)-query_size
-#
-#
-# query_dataset, gallery_dataset = random_split(text_dataset, [query_size, gallery_size], generator=rng)
-
-
 batch_size = 32
 train_dataset = Dydata(r"../data_processed3/train")
 torch.manual_seed(1234)
@@ -62,17 +42,6 @@ gallery_size = len(text_dataset)-query_size
 
 query_dataset, gallery_dataset = random_split(text_dataset, [query_size, gallery_size], generator=rng)
 
-# indices_x = []
-# indices_y = []
-# i = 0
-# j = i + 1
-# while i < len(text_dataset):
-#     indices_x.append(i)
-#     indices_y.append(i + 1)
-#     i += 2
-#
-# query_dataset = Subset(text_dataset, indices_x)
-# gallery_dataset = Subset(text_dataset, indices_y)
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 trainloader = DataLoader(train_dataset,  batch_size, shuffle=True,drop_last=True)
@@ -130,18 +99,8 @@ for epoch in range(500):
             print("训练次数{}，当前损失{}".format(train_step, loss))
 
 
-    # writer.add_scalar("train_loss", total_loss/num, epoch+11)
     scheduler.step()
-    # train_list_loss.append(total_loss.detach().cpu().numpy()/num)
 
-    # if (epoch+1)%10==0:
-    #
-    #     plt.figure()
-    #     plt.plot(epoch_list, train_list_loss, label="train_loss")
-    #     plt.xlabel("n_epoch")
-    #     plt.ylabel("Loss")
-    #     plt.title("train_loss")
-    #     plt.savefig("pic/train_loss/train_loss_{}.jpg".format(epoch+1))
 
 
 

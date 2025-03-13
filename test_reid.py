@@ -109,6 +109,5 @@ for epoch in range(500):
         top1_acc, top3_acc, topk_acc, mAP = evaluate(qf, gf, q_pids, g_pids)
         print("第{}次测试结果:Top-1 Accuracy:{},Top-3 Accuracy:{} Top-5 Accuracy:{},mAP:{}".format(epoch+1,top1_acc,top3_acc,topk_acc,mAP))
 
-        #logger_info("第{}次测试结果:Top-1 Accuracy:{},Top-3 Accuracy:{} Top-5 Accuracy:{},mAP:{}".format(epoch+1,top1_acc,top3_acc,topk_acc,mAP))
 
 
