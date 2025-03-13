@@ -20,7 +20,6 @@ def logger_config(log_path, logging_name):
     logger.addHandler(handler)
     return logger
 
-# logger = logger_config(os.path.join(r"log", 'log_own_256_30_10_reid.txt'), "pointnet-lstm")
 logger = logger_config(os.path.join(r"log", 'log.txt'), "AOD-MGC")
 def logger_info(info):
     # print(info)
@@ -95,14 +94,10 @@ for epoch in range(500):
         gf = np.asarray(gf)
         g_pids = np.asarray(g_pids)
 
-        # 检查 query_features 是否包含 NaN 值
         if np.isnan(qf).any():
-            # 处理 NaN 值，例如填充为 0
             qf[np.isnan(qf)] = 0
 
-        # 检查 gallery_features 是否包含 NaN 值
         if np.isnan(gf).any():
-            # 处理 NaN 值，例如填充为 0
             gf[np.isnan(gf)] = 0
 
 
