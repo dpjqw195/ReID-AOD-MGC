@@ -89,7 +89,7 @@ data/
 To test model:
 
 ```
-python test_reid.py
+python reid.py
 ```
 
 
