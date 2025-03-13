@@ -11,8 +11,7 @@ ReID-AOD-MGC/
 │   └── orientation.py   # orientation blocks
 |   └── encoder.py   # MGC blocks
 |   └── aod_mgc.py   # AOD_MGC model
-├── test_reid.py                # Test
-├── train_reid.py               # Train
+├── reid.py                # Test
 └── readme.md              # This file
 ```
 
