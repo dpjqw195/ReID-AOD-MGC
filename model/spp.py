@@ -32,16 +32,3 @@ class SPPLayer(torch.nn.Module):
             else:
                 x_flatten = torch.cat((x_flatten, tensor.view(num, c, -1)), 2)
         return x_flatten
-
-if __name__ == '__main__':
-
-    x = torch.randn((4,50,8,32))
-    num,c,h,w = 4,50,8,32
-    # level = 2
-    # kernel_size = (math.ceil(h / level), math.ceil(w / level))
-    # stride = (math.ceil(h / level), math.ceil(w / level))
-    # pooling = (math.floor((kernel_size[0] * level - h + 1) / 2), math.floor((kernel_size[1] * level - w + 1) / 2))
-    spp = SPPLayer(3)
-    print(spp(x).shape)
-    # net = nn.MaxPool2d(kernel_size, stride, pooling)
-    # print(net(x).shape)

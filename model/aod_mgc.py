@@ -1,10 +1,6 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-import sys
-import numpy as np
 from torch.nn.utils.weight_norm import WeightNorm
-
 from Anchor import GlobalModule, BasePointNet
 from iter_pool import Pool
 from encoder import Encoder
@@ -87,38 +83,6 @@ def sample_and_group(xyz, points, new_xyz, radius, K, use_xyz=True):
     return new_xyz, new_points, grouped_inds, grouped_xyz
 
 
-#def sample_and_group(xyz, points, new_xyz, radius, K, use_xyz=True, i=0):
-#     '''
-#     :param xyz: shape=(B, N, 3)
-#     :param points: shape=(B, N, C)
-#     :param M: int
-#     :param radius:float
-#     :param K: int
-#     :param use_xyz: bool, if True concat XYZ with local point features, otherwise just use point features
-#     :return: new_xyz, shape=(B, M, 3); new_points, shape=(B, M, K, C+3);
-#              group_inds, shape=(B, M, K); grouped_xyz, shape=(B, M, K, 3)
-#     '''
-#     # new_xyz = gather_points(xyz, fps(xyz, M))
-#     grouped_inds = ball_query(xyz, new_xyz, radius, K)
-#     grouped_xyz = gather_points(xyz, grouped_inds)
-# 
-#     ori_xyz = grouped_xyz.reshape(40, 200, 15, 8, 3)
-#     ori_xyz = ori_xyz.cpu()
-#     ori_xyz = ori_xyz.numpy()
-# 
-#     np.save(r"plotAnOri/ori_{}.npy".format(i), ori_xyz)
-# 
-#     # grouped_xyz -= torch.unsqueeze(new_xyz, 2).repeat(1, 1, K, 1)
-#     if points is not None:
-#         grouped_points = gather_points(points, grouped_inds)
-#         if use_xyz:
-#             new_points = torch.cat((grouped_xyz.float(), grouped_points.float()), dim=-1)
-#         else:
-#             new_points = grouped_points
-#     else:
-#         new_points = grouped_xyz
-#     return new_xyz, new_points, grouped_inds, grouped_xyz
-
 
 def sample_and_group_all(xyz, points, use_xyz=True):
     '''
@@ -171,48 +135,6 @@ class distLinear(nn.Module):
 
         return scores
 
-#class PointNet_SA_Module(nn.Module):
-#     def __init__(self, radius, K, in_channels, mlp, group_all, bn=True, use_xyz=True):
-#         super(PointNet_SA_Module, self).__init__()
-#         self.radius = radius
-#         self.K = K
-#         self.in_channels = in_channels
-#         self.mlp = mlp
-#         self.group_all = group_all
-#         self.bn = bn
-#         self.use_xyz = use_xyz
-#         self.backbone = nn.Sequential()
-# 
-#         for i, out_channels in enumerate(mlp):
-#             self.backbone.add_module('Conv{}'.format(i),
-#                                      nn.Conv2d(in_channels, out_channels, 1,
-#                                                stride=1, padding=0, bias=False))
-#             if bn:
-#                 self.backbone.add_module('Bn{}'.format(i),
-#                                          nn.BatchNorm2d(out_channels))
-#             self.backbone.add_module('Relu{}'.format(i), nn.ReLU())
-#             in_channels = out_channels
-#         self.pool = Pool([[4, 128], [2, 64], [1, 32]])
-# 
-#     def forward(self, xyz, points, new_xyz, i):
-#         if self.group_all:
-#             new_xyz, new_points, grouped_inds, grouped_xyz = sample_and_group_all(xyz, points, self.use_xyz)
-#         else:
-#             new_xyz, new_points, grouped_inds, grouped_xyz = sample_and_group(xyz=xyz,
-#                                                                               points=points,
-#                                                                               new_xyz=new_xyz,
-#                                                                               radius=self.radius,
-#                                                                               K=self.K,
-#                                                                               use_xyz=self.use_xyz,
-#                                                                               i=i)
-# 
-#         new_points = self.backbone(new_points.permute(0, 3, 2, 1).contiguous())
-#         new_points = new_points.permute(0, 3, 2, 1).contiguous()
-#         new_points = self.pool(new_points)
-#         return new_xyz, new_points
-
-
-
 
 class PointNet_SA_Module(nn.Module):
     def __init__(self,radius, K, in_channels, mlp, group_all, bn=True, use_xyz=True):
@@ -258,12 +180,8 @@ class pointnet_mgc(nn.Module):
         super(pointnet_mgc, self).__init__()
         self.base = BasePointNet()
         self.glob1 = GlobalModule(15)
-        self.pt_sa1 = PointNet_SA_Module(radius=20, K=8, in_channels=in_channels, mlp=[64, 64, 128, 256],
-                                         group_all=False)
+        self.pt_sa1 = PointNet_SA_Module(radius=20, K=8, in_channels=in_channels, mlp=[64, 64, 128, 256],                                      group_all=False)
         self.encode = Encoder(1, 1, 64, 64, 672, 128)
-
-        # self.feature = nn.Sequential(nn.Linear(frame * 1024, 2048),nn.Dropout(),nn.Linear(2048,256))
-        # self.feature = nn.Sequential(nn.Linear(frame * 672+100*672+50*672, 256))
         self.feature = distLinear(frame * 672, 256)
 
     def forward(self, xyz, points):
@@ -271,36 +189,16 @@ class pointnet_mgc(nn.Module):
         xyz = xyz.reshape(batchsize * t, n, c)
         if points is not None:
             points = points.reshape(batchsize * t, n, -1)
-
         new_xyz = self.base(xyz)
         _, new_xyz, _ = self.glob1(new_xyz, batchsize, t)
-
         new_xyz, new_points = self.pt_sa1(xyz, points, new_xyz)
-
         new_points = torch.max(new_points, dim=1)[0]
         net = new_points.reshape(batchsize, t, -1)
-
         net = self.encode(net, None)
         net = net.reshape(batchsize, -1)
         net = self.feature(net)
-
         return net
 
 
 
 
-
-
-if __name__ == '__main__':
-    xyz = torch.randn(8,200,50, 3)
-    # pt_sa = PointNet_SA_Module(radius=20, K=8, in_channels=3, mlp=[64, 64, 128, 256], group_all=False)
-    net = pointnet_mgc(3)
-    print(net(xyz, None).shape)
-
-
-    # net = ssg_model(xyz, points)
-    # print(net.shape)
-    # print(label.shape)
-    # loss = cls_loss()
-    # loss = loss(net, label)
-    # print(loss)

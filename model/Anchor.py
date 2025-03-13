@@ -93,16 +93,3 @@ class GlobalModule(nn.Module):
         g_vec, g_loc, hn, cn=self.grnn(x)
         g_loc = g_loc.reshape(batch_size*length_size, self.M, 3)
         return g_vec, g_loc, attn_weights
-
-
-if __name__ == '__main__':
-
-    # x = torch.randn(4,50,3)
-    # net = BasePointNet()
-    # print(net(x).shape)
-
-    x = torch.randn(4,15,27)
-    net = GlobalModule(15)
-    g,l,_=net(x,2,2)
-    print(g.shape)
-    print(l.shape)

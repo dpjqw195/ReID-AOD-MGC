@@ -146,9 +146,7 @@ class PointSIFT_res_module(nn.Module):
 
         ##print(grouped_points.shape)
         new_points = self.conv2(grouped_points)
-
         new_points = new_points.squeeze(-1)
-
         if points is not None:
             points = points.permute(0, 2, 1).contiguous()
             # print(points.shape)
@@ -158,15 +156,8 @@ class PointSIFT_res_module(nn.Module):
                 new_points = new_points + points
             elif self.merge == 'concat':
                 new_points = torch.cat([new_points, points], dim=1)
-
         new_points = F.relu(new_points)
         new_points = new_points.permute(0, 2, 1).contiguous()
         xyz = xyz.reshape((batchsize, t, n, c))
         new_points = new_points.reshape((batchsize, t, n, -1))
-
         return xyz, new_points
-
-if __name__ == '__main__':
-    x = torch.randn((2,100,50,3))
-    net = PointSIFT_module(20,32)
-    print(net(x).shape)
