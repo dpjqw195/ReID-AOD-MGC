@@ -87,12 +87,6 @@ data/
 
 #### Training And Evaluation
 
-To train model from scratch:
-
-```
-python train_reid.py
-```
-
 To test model:
 
 ```
