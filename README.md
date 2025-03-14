@@ -84,8 +84,11 @@ data/
 
 
 
-#### Training And Evaluation
-
+#### Evaluation
+Model parameters: model_34.pth  
+Link: [https://pan.baidu.com/s/1PsadSU6h5dWS8s_rhJ_JKA?pwd=1234](https://pan.baidu.com/s/1PsadSU6h5dWS8s_rhJ_JKA?pwd=1234)  
+Extraction code: 1234
+<br>
 To test model:
 
 ```
